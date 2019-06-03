@@ -2,7 +2,6 @@
 options(jupyter.plot_mimetypes = 'image/png')
 #Load library
 targetPackages <- c(
-  "ggplot2",
   "extrafont",
   "RColorBrewer",
   "knitr",
@@ -28,7 +27,8 @@ targetPackages <- c(
   "webshot",
   "gridExtra",
   "TTR",
-  "lubridate"
+  "lubridate",
+  "ggplot2"
 ) 
 newPackages <- targetPackages[!(targetPackages %in% installed.packages()[,"Package"])]
 if(length(newPackages)) {
@@ -63,75 +63,84 @@ g.scale <- 1.2
 dt.cp <- fread("./CP.csv")
 dt.cp$Date <- as.Date(dt.cp$Date)
 dt.cp <- as.data.table(dt.cp)
-dt.cp <- dt.cp[Date > "2019-05-01"]
+ItemList <- colnames(dt.cp)[4:19]
+ItemList.ja <- c("闇の精霊",
+                 "持続スキル",
+                 "知識(一般)",
+                 "知識(ボス)",
+                 "知識(ボスLv報酬)",
+                 "図鑑",
+                 "キャラLv",
+                 "スキル修練Lv",
+                 "衣装",
+                 "装備",
+                 "アクセ",
+                 "遺物",
+                 "水晶",
+                 "魔力刻印",
+                 "光原石",
+                 "成長ボーナス")
 
-color.pal <- brewer.pal(9,"Spectral")
-p.title <- paste("GyuNyuYeah, Combat point & payments log (", now(), ")", sep = "")
-p1 <- plot_ly()
-p1 <- layout(p1, autosize = TRUE, barmode = "stack", hovermode = "x", font = list(family = "Meiryo UI"),
-         xaxis = list(autorange = TRUE, type = "date"),
-         yaxis = list(autorange = TRUE, type = "linear")
-         ) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Growth_bonus, hoverinfo = "y+name",name = "成長特典", type = "bar",
-            marker = list(color = color.pal[9],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Shine_stone, hoverinfo = "y+name",name = "光原石", type = "bar",
-            marker = list(color = color.pal[8],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Magic_stamps, hoverinfo = "y+name",name = "魔力刻印", type = "bar",
-            marker = list(color = color.pal[8],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Crystal, hoverinfo = "y+name",name = "水晶", type = "bar",
-            marker = list(color = color.pal[8],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Artifact, hoverinfo = "y+name",name = "遺物", type = "bar",
-            marker = list(color = color.pal[8],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Accessories, hoverinfo = "y+name",name = "アクセ", type = "bar",
-            marker = list(color = color.pal[8],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Equipments, hoverinfo = "y+name",name = "装備", type = "bar",
-            marker = list(color = color.pal[8],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Costume, hoverinfo = "y+name",name = "衣装", type = "bar",
-            marker = list(color = color.pal[8],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Skill_training, hoverinfo = "y+name",name = "スキル修練Lv", type = "bar",
-            marker = list(color = color.pal[7],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Character_Lv, hoverinfo = "y+name", name = "キャラLv", type = "bar",
-            marker = list(color = color.pal[6],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Picture_Book, hoverinfo = "y+name", name = "図鑑", type = "bar",
-            marker = list(color = color.pal[5],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Knowledge_Boss_Lv_reward, hoverinfo = "y+name",name = "知識(ボスLv報酬)", type = "bar",
-            marker = list(color = color.pal[4],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Knowledge_Boss, hoverinfo = "y+name",name = "知識(ボス)", type = "bar",
-            marker = list(color = color.pal[4],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Knowledge_General, hoverinfo = "y+name",name = "知識(一般)", type = "bar",
-            marker = list(color = color.pal[4],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Sustatined_Skill, hoverinfo = "y+name", name = "持続スキル", type = "bar",
-            marker = list(color = color.pal[3],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Dark_Spirit, hoverinfo = "y+name", name = "闇の精霊", type = "bar",
-            marker = list(color = color.pal[2],
-                          line = list(color = "Black",width = 1))) %>%
-  add_trace(p1, x = dt.cp$Date, y = dt.cp$Total_CP, hoverinfo = "x+y+text+name", mode = "markers", name = "戦闘力", text = dt.cp$Comment, type = "scatter",
-            marker = list(color = "rgb(246, 0, 0)", size = 10, symbol = "star"))
-# p1
-p2 <- plot_ly()
-p2 <- layout(p2, autosize = TRUE, barmode = "stack", hovermode = "x", title = p.title, font = list(family = "Meiryo UI"),
-         xaxis = list(autorange = TRUE, type = "date"),
-         yaxis = list(autorange = TRUE, type = "linear")
-  ) %>%
-  add_trace(p2, x = dt.cp$Date, y = dt.cp$Total_payment, hoverinfo = "y+name",name = "課金額", mode = "markers+lines", fill = 'tozeroy')
-# p2
-p <- subplot(p1, p2, nrows = 2, shareX = TRUE)
+dt.cp.temp <- dt.cp[, Total_CP.trunc:=trunc(Total_CP/100)*100]
+dt.cp.trunc.user <- dt.cp.temp %>%
+  group_by(Player,Total_CP.trunc) %>%
+  summarize(mean(get(ItemList[1])),
+            mean(get(ItemList[2])),
+            mean(get(ItemList[3])),
+            mean(get(ItemList[4])),
+            mean(get(ItemList[5])),
+            mean(get(ItemList[6])),
+            mean(get(ItemList[7])),
+            mean(get(ItemList[8])),
+            mean(get(ItemList[9])),
+            mean(get(ItemList[10])),
+            mean(get(ItemList[11])),
+            mean(get(ItemList[12])),
+            mean(get(ItemList[13])),
+            mean(get(ItemList[14])),
+            mean(get(ItemList[15])),
+            mean(get(ItemList[16]))
+  )
+setnames(dt.cp.trunc.user, c("Player","Total_CP.trunc", ItemList))
+dt.cp.trunc <- dt.cp.trunc.user %>%
+  group_by(Total_CP.trunc) %>%
+  summarize(mean(get(ItemList[1])),
+            mean(get(ItemList[2])),
+            mean(get(ItemList[3])),
+            mean(get(ItemList[4])),
+            mean(get(ItemList[5])),
+            mean(get(ItemList[6])),
+            mean(get(ItemList[7])),
+            mean(get(ItemList[8])),
+            mean(get(ItemList[9])),
+            mean(get(ItemList[10])),
+            mean(get(ItemList[11])),
+            mean(get(ItemList[12])),
+            mean(get(ItemList[13])),
+            mean(get(ItemList[14])),
+            mean(get(ItemList[15])),
+            mean(get(ItemList[16]))
+            )
+setnames(dt.cp.trunc, c("Total_CP", ItemList))
+rm(dt.cp.temp)
+
+p <- plot_ly(
+  data = dt.cp.trunc,
+  type = "scatterpolar",
+  mode = "markers+lines",
+  fill = "toself"
+)
+for (i in 1:nrow(dt.cp.trunc)) {
+ # standard.pts <- unname(unlist(c(dt.cp.trunc[Total_CP == min(Total_CP),2:17],dt.cp.trunc[Total_CP == min(Total_CP),2])))
+  standard.pts <- c(1026,60,240,120,13,48,342,47,80,1065,350,40,41,30,23,275,1026)
+    pts <- unname(unlist(c(dt.cp.trunc[i,2:17],dt.cp.trunc[i,2])))
+  p <- add_trace(
+    p,
+    theta = c(ItemList.ja, ItemList.ja[1]),
+    r = pts/standard.pts,
+    name = dt.cp.trunc[i,1]
+  )
+}
 p
-setwd("./docs")
-saveWidget(p, "Index.html")
-setwd("../")
+
+

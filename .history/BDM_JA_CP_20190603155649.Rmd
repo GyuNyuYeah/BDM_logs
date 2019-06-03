@@ -1,0 +1,79 @@
+---
+title: "Black Desert Mobile JP // Combat point"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#Magic word!
+options(jupyter.plot_mimetypes = 'image/png')
+#Load library
+targetPackages <- c(
+  "extrafont",
+  "RColorBrewer",
+  "knitr",
+  "data.table",
+  "GGally",
+  "mclust",
+  "mixtools",
+  "dplyr",
+  "latticeExtra",
+  "devtools",
+  "IRdisplay",
+  "repr",
+  "dtplyr",
+  "ggrepel",
+  "mixtools",
+  "RMySQL",
+  "rmarkdown",
+  "reshape",
+  "reshape2",
+  "plotly",
+  "htmlwidgets",
+  "formatR",
+  "webshot",
+  "gridExtra",
+  "TTR",
+  "lubridate",
+  "ggplot2"
+) 
+newPackages <- targetPackages[!(targetPackages %in% installed.packages()[,"Package"])]
+if(length(newPackages)) {
+  install.packages(newPackages, repos = "http://cran.us.r-project.org")
+}
+for(package in targetPackages) {
+  suppressMessages(library(package, character.only = T))
+}
+## For 1st time only
+# webshot::install_phantomjs()
+# devtools::install_github("IRkernel/IRkernel")
+# font_import()
+# loadfonts()
+rm(package, newPackages, targetPackages)
+
+#Plot color
+colfunc<-colorRampPalette(
+  c(
+    "red",
+    "yellow",
+    "springgreen",
+    "royalblue"
+  )
+)
+```
+# 黒い砂漠モバイル 戦闘力について  
+黒サバではリネレボと違って、他人の装備・戦闘力をのぞき見することができません。  
+そのため、他人と比べた時、自分のどこが足りないのか、、、。まじめに文章書くの飽きた。  
+Twitterで募集した戦闘力詳細の画面を基に、100毎に区切った平均のレーダーチャートをつくりました。おわり。
+
+## 結果！  
+数値そのままのレーダーチャートだと歪なかたちになるので、項目ごとに3700の戦闘力を基準に正規化しています。  
+```{r cars}
+summary(cars)
+```
+## 補足  
+戦闘力は10の位切り捨てして、100毎に区切って平均を出しています。そうすると、3700, 3800あたりは僕のデータがほとんどなので、僕のデータに引っ張られてしまいます。そのため、プレイヤー毎に100区切りの平均値を出して、さらに戦闘力100毎の平均値を計算しました。もっといいやり方あれば教えてください。
+
+## 謝辞とお願い  
+ご協力いただきました皆さん、どうもありがとうございました。 あえて名前は伏せます。
+スクショは引き続き募集中です。リツイもありがたいですが、スクショ張っていただけると助かります。TL載せたくないって人は、DMください。  
+@GyuNyuYeah

@@ -1,0 +1,191 @@
+---
+title: "Black Desert Mobile JP // Combat point"
+output: html_document
+---
+
+```{r setup, echo=FALSE, error=FALSE, message=FALSE}
+#Magic word!
+options(jupyter.plot_mimetypes = 'image/png')
+#Load library
+targetPackages <- c(
+  "extrafont",
+  "RColorBrewer",
+  "knitr",
+  "data.table",
+  "GGally",
+  "mclust",
+  "mixtools",
+  "dplyr",
+  "latticeExtra",
+  "devtools",
+  "IRdisplay",
+  "repr",
+  "dtplyr",
+  "ggrepel",
+  "mixtools",
+  "RMySQL",
+  "rmarkdown",
+  "reshape",
+  "reshape2",
+  "plotly",
+  "htmlwidgets",
+  "formatR",
+  "webshot",
+  "gridExtra",
+  "TTR",
+  "lubridate",
+  "ggplot2"
+) 
+newPackages <- targetPackages[!(targetPackages %in% installed.packages()[,"Package"])]
+if(length(newPackages)) {
+  install.packages(newPackages, repos = "http://cran.us.r-project.org")
+}
+for(package in targetPackages) {
+  suppressMessages(library(package, character.only = T))
+}
+## For 1st time only
+# webshot::install_phantomjs()
+# devtools::install_github("IRkernel/IRkernel")
+# font_import()
+# loadfonts()
+rm(package, newPackages, targetPackages)
+
+#Plot color
+colfunc<-colorRampPalette(
+  c(
+    "red",
+    "yellow",
+    "springgreen",
+    "royalblue"
+  )
+)
+dt.cp <- fread("./CP.csv")
+dt.cp$Date <- as.Date(dt.cp$Date)
+dt.cp <- as.data.table(dt.cp)
+ItemList <- colnames(dt.cp)[4:19]
+ItemList.ja <- c("闇の精霊",
+                 "持続スキル",
+                 "知識(一般)",
+                 "知識(ボス)",
+                 "知識(ボスLv報酬)",
+                 "図鑑",
+                 "キャラLv",
+                 "スキル修練Lv",
+                 "衣装",
+                 "装備",
+                 "アクセ",
+                 "遺物",
+                 "水晶",
+                 "魔力刻印",
+                 "光原石",
+                 "成長ボーナス")
+
+dt.cp.temp <- dt.cp[, Total_CP.trunc:=trunc(Total_CP/100)*100]
+dt.cp.trunc.user <- dt.cp.temp %>%
+  group_by(Player,Total_CP.trunc) %>%
+  summarize(mean(get(ItemList[1])),
+            mean(get(ItemList[2])),
+            mean(get(ItemList[3])),
+            mean(get(ItemList[4])),
+            mean(get(ItemList[5])),
+            mean(get(ItemList[6])),
+            mean(get(ItemList[7])),
+            mean(get(ItemList[8])),
+            mean(get(ItemList[9])),
+            mean(get(ItemList[10])),
+            mean(get(ItemList[11])),
+            mean(get(ItemList[12])),
+            mean(get(ItemList[13])),
+            mean(get(ItemList[14])),
+            mean(get(ItemList[15])),
+            mean(get(ItemList[16]))
+  )
+setnames(dt.cp.trunc.user, c("Player","Total_CP.trunc", ItemList))
+dt.cp.trunc <- dt.cp.trunc.user %>%
+  group_by(Total_CP.trunc) %>%
+  summarize(mean(get(ItemList[1])),
+            mean(get(ItemList[2])),
+            mean(get(ItemList[3])),
+            mean(get(ItemList[4])),
+            mean(get(ItemList[5])),
+            mean(get(ItemList[6])),
+            mean(get(ItemList[7])),
+            mean(get(ItemList[8])),
+            mean(get(ItemList[9])),
+            mean(get(ItemList[10])),
+            mean(get(ItemList[11])),
+            mean(get(ItemList[12])),
+            mean(get(ItemList[13])),
+            mean(get(ItemList[14])),
+            mean(get(ItemList[15])),
+            mean(get(ItemList[16]))
+            )
+setnames(dt.cp.trunc, c("Total_CP", ItemList))
+rm(dt.cp.temp)
+dt.cp.trunc <- dt.cp.trunc[order(Total_CP)]
+```
+# 黒い砂漠モバイル 戦闘力について  
+黒サバではリネレボと違って、他人の装備・戦闘力をのぞき見することができません。  
+そのため、他人と比べた時、自分のどこが足りないのか、、、。まじめに文章書くの飽きた。  
+Twitterで募集した戦闘力詳細の画面を基に、100毎に区切った平均のレーダーチャートをつくりました。おわり。
+
+![](./screenshot.jpg)
+
+## 結果！  
+凡例(左の3700とかね)クリックすると表示/非表示の切り替えできます。拡大縮小はうまく動きません(T T)   
+やっちゃった場合はリロードしてください。。。
+
+### 数値で比較(歪だよ)  
+```{r echo=FALSE,message=FALSE}
+p <- plot_ly(
+  data = dt.cp.trunc,
+  type = "scatterpolar",
+  mode = "markers+lines",
+  fill = "toself"
+)
+for (i in 1:nrow(dt.cp.trunc)) {
+ # standard.pts <- unname(unlist(c(dt.cp.trunc[Total_CP == min(Total_CP),2:17],dt.cp.trunc[Total_CP == min(Total_CP),2])))
+  standard.pts <- c(1026,60,240,120,13,48,342,47,80,1065,350,40,41,30,23,275,1026)
+  pts <- unname(unlist(c(dt.cp.trunc[i,2:17],dt.cp.trunc[i,2])))
+  p <- add_trace(
+    p,
+    theta = c(ItemList.ja, ItemList.ja[1]),
+    r = pts/standard.pts,
+    name = dt.cp.trunc[i,1]
+  )
+}
+p
+```
+
+
+### けろふぇんさんの3800に到達するための戦闘力を基準に正規化  
+下のプロット: けろふぇんさんのTweetにあった、3800に到達するための戦闘力を基準として項目ごとに正規化したものです。掲載当時から、図鑑や魔力刻印の上限が変わっているため注意してください。(今のほうが上げやすくなってるよ)  
+
+```{r echo=FALSE,message=FALSE}
+p <- plot_ly(
+  data = dt.cp.trunc,
+  type = "scatterpolar",
+  mode = "markers+lines",
+  fill = "toself"
+)
+for (i in 1:nrow(dt.cp.trunc)) {
+ # standard.pts <- unname(unlist(c(dt.cp.trunc[Total_CP == min(Total_CP),2:17],dt.cp.trunc[Total_CP == min(Total_CP),2])))
+  standard.pts <- c(1026,60,240,120,13,48,342,47,80,1065,350,40,41,30,23,275,1026)
+  pts <- unname(unlist(c(dt.cp.trunc[i,2:17],dt.cp.trunc[i,2])))
+  p <- add_trace(
+    p,
+    theta = c(ItemList.ja, ItemList.ja[1]),
+    r = pts/standard.pts,
+    name = dt.cp.trunc[i,1]
+  )
+}
+p
+```
+
+## 補足  
+戦闘力は10の位切り捨てして、100毎に区切って平均を出しています。そうすると、3700, 3800あたりは僕のデータがほとんどなので、僕のデータに引っ張られてしまいます。そのため、プレイヤー毎に100区切りの平均値を出して、さらに戦闘力100毎の平均値を計算しました。もっといいやり方あれば教えてください。
+
+## 謝辞とお願い  
+ご協力いただきました皆さん、どうもありがとうございました。 あえて名前は伏せます。
+スクショは引き続き募集中です。リツイもありがたいですが、スクショ張っていただけると助かります。TL載せたくないって人は、DMください。  
+@GyuNyuYeah

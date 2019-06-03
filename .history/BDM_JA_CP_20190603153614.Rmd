@@ -1,0 +1,68 @@
+---
+title: "Black Desert Mobile JP // Combat point"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#Magic word!
+options(jupyter.plot_mimetypes = 'image/png')
+#Load library
+targetPackages <- c(
+  "extrafont",
+  "RColorBrewer",
+  "knitr",
+  "data.table",
+  "GGally",
+  "mclust",
+  "mixtools",
+  "dplyr",
+  "latticeExtra",
+  "devtools",
+  "IRdisplay",
+  "repr",
+  "dtplyr",
+  "ggrepel",
+  "mixtools",
+  "RMySQL",
+  "rmarkdown",
+  "reshape",
+  "reshape2",
+  "plotly",
+  "htmlwidgets",
+  "formatR",
+  "webshot",
+  "gridExtra",
+  "TTR",
+  "lubridate",
+  "ggplot2"
+) 
+newPackages <- targetPackages[!(targetPackages %in% installed.packages()[,"Package"])]
+if(length(newPackages)) {
+  install.packages(newPackages, repos = "http://cran.us.r-project.org")
+}
+for(package in targetPackages) {
+  suppressMessages(library(package, character.only = T))
+}
+## For 1st time only
+# webshot::install_phantomjs()
+# devtools::install_github("IRkernel/IRkernel")
+# font_import()
+# loadfonts()
+rm(package, newPackages, targetPackages)
+
+#Plot color
+colfunc<-colorRampPalette(
+  c(
+    "red",
+    "yellow",
+    "springgreen",
+    "royalblue"
+  )
+)
+```
+
+
+
+```{r cars}
+summary(cars)
+```
