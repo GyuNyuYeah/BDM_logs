@@ -1,9 +1,3 @@
----
-title: "Black Desert Mobile JP // Combat point"
-output: html_document
----
-
-```{r setup, echo=FALSE, error=FALSE, message=FALSE}
 #Magic word!
 options(jupyter.plot_mimetypes = 'image/png')
 #Load library
@@ -59,6 +53,13 @@ colfunc<-colorRampPalette(
     "royalblue"
   )
 )
+# Define Export plot size
+p.width <- 900
+p.height <- 400
+g.width <- 18
+g.height <- 8
+g.scale <- 1.2
+
 dt.cp <- fread("./CP.csv")
 dt.cp$Date <- as.Date(dt.cp$Date)
 dt.cp <- as.data.table(dt.cp)
@@ -122,21 +123,7 @@ dt.cp.trunc <- dt.cp.trunc.user %>%
             )
 setnames(dt.cp.trunc, c("Total_CP", ItemList))
 rm(dt.cp.temp)
-dt.cp.trunc <- dt.cp.trunc[order(Total_CP)]
-```
-# 黒い砂漠モバイル 戦闘力について  
-黒サバではリネレボと違って、他人の装備・戦闘力をのぞき見することができません。  
-そのため、他人と比べた時、自分のどこが足りないのか、、、。まじめに文章書くの飽きた。  
-Twitterで募集した戦闘力詳細の画面(下のスクショ)を基に、100毎に区切った平均のレーダーチャートをつくりました。おわり。
 
-![](./screenshot.png)
-
-## 結果！  
-凡例(左の3700とかね)クリックすると表示/非表示の切り替えできます。拡大縮小はうまく動きません(T T)   
-やっちゃった場合はリロードしてください。。。
-
-### 数値で比較(歪だよ)  
-```{r echo=FALSE,message=FALSE}
 p <- plot_ly(
   data = dt.cp.trunc,
   type = "scatterpolar",
@@ -146,32 +133,7 @@ p <- plot_ly(
 for (i in 1:nrow(dt.cp.trunc)) {
  # standard.pts <- unname(unlist(c(dt.cp.trunc[Total_CP == min(Total_CP),2:17],dt.cp.trunc[Total_CP == min(Total_CP),2])))
   standard.pts <- c(1026,60,240,120,13,48,342,47,80,1065,350,40,41,30,23,275,1026)
-  pts <- unname(unlist(c(dt.cp.trunc[i,2:17],dt.cp.trunc[i,2])))
-  p <- add_trace(
-    p,
-    theta = c(ItemList.ja, ItemList.ja[1]),
-    r = pts,
-    name = dt.cp.trunc[i,1]
-  )
-}
-p
-print(paste("update:",now()))
-```
-
-### けろふぇんさんの3800に到達するための戦闘力を基準に正規化  
-下のプロット: けろふぇんさんのTweetにあった、3800に到達するための戦闘力を基準として項目ごとに正規化したものです。掲載当時から、図鑑や魔力刻印の上限が変わっているため注意してください。(今のほうが上げやすくなってるよ)  
-
-```{r echo=FALSE,message=FALSE}
-p <- plot_ly(
-  data = dt.cp.trunc,
-  type = "scatterpolar",
-  mode = "markers+lines",
-  fill = "toself"
-)
-for (i in 1:nrow(dt.cp.trunc)) {
- # standard.pts <- unname(unlist(c(dt.cp.trunc[Total_CP == min(Total_CP),2:17],dt.cp.trunc[Total_CP == min(Total_CP),2])))
-  standard.pts <- c(1026,60,240,120,13,48,342,47,80,1065,350,40,41,30,23,275,1026)
-  pts <- unname(unlist(c(dt.cp.trunc[i,2:17],dt.cp.trunc[i,2])))
+    pts <- unname(unlist(c(dt.cp.trunc[i,2:17],dt.cp.trunc[i,2])))
   p <- add_trace(
     p,
     theta = c(ItemList.ja, ItemList.ja[1]),
@@ -180,14 +142,5 @@ for (i in 1:nrow(dt.cp.trunc)) {
   )
 }
 p
-print(paste("update:",now()))
-```
 
-## 補足  
-戦闘力は10の位切り捨てして、100毎に区切って平均を出しています。そうすると、3700, 3800あたりは僕のデータがほとんどなので、僕のデータに引っ張られてしまいます。そのため、プレイヤー毎に100区切りの平均値を出して、さらに戦闘力100毎の平均値を計算しました。もっといいやり方あれば教えてください。
 
-## 謝辞とお願い  
-ご協力いただきました皆さん、どうもありがとうございました。 あえて名前は伏せます。
-けろふぇんさん、勝手にデータ使ってごめんなさい。使っちゃいやよっていう場合は下のプロットは消しますので、連絡ください。
-スクショは引き続き募集中です。リツイもありがたいですが、スクショ張っていただけると助かります。TL載せたくないって人は、DMください。  
-Twitter @GyuNyuYeah_BDM
