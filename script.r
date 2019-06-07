@@ -154,7 +154,7 @@ rm(dt.cp.trunc.user)
 t <- dt.cp.mean
 for (i in 1:nrow(t)) {
   for (j in 1:nrow(ItemList)) {
-    temp1 <- data.table(DataName = paste(t[i]$DataName, " Avg.\n(n=", t[i]$Player.count, ")", sep = ""),
+    temp1 <- data.table(DataName = paste(t[i]$DataName, "\n", t[i]$Player.count, " player(s)", sep = ""),
                         Item = ItemList[j,"ja"],
                         Value = t[i,get(unname(unlist(ItemList[j,"ja"])))])
     if (j == 1) {
@@ -242,5 +242,12 @@ for (i in 1:length(player.list)) {
          limitsize = F)
   }
 setwd("../")
+
+for (i in 1:nlevels(factor(dt.cp$Player))) {
+  crtPlayer <- as.character(levels(factor(dt.cp$Player))[i])
+  dt.cp[Player == crtPlayer, Player:=paste("Player",i, sep = "")]
+}
+
+
 print(proc.time()-s)
 rm(list = ls(all =T))
