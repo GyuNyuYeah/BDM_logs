@@ -31,7 +31,8 @@ targetPackages <- c(
   "TTR",
   "lubridate",
   "ggplot2",
-  "gtable"
+  "gtable",
+  "corrplot"
 ) 
 newPackages <- targetPackages[!(targetPackages %in% installed.packages()[,"Package"])]
 if(length(newPackages)) {
@@ -81,23 +82,23 @@ dt.cp <- fread("./CP.csv")
 dt.cp$Date <- as.Date(dt.cp$Date)
 dt.cp <- as.data.table(dt.cp)
 ItemList.en <- colnames(dt.cp)[4:20]
-ItemList.ja <- c("闇の攤霊",
+ItemList.ja <- c("闇の精霊",
                  "持続スキル",
                  "知識(一般)",
                  "知識(ボス)",
-                 "知識(ボスLv報抃)",
-                 "ペット収抔",
-                 "掵鑑",
+                 "知識(ボスLv報酬)",
+                 "ペット収集",
+                 "図鑑",
                  "キャラLv",
-                 "スキル戮練Lv",
+                 "スキル修練Lv",
                  "衣装",
                  "装備",
                  "アクセ",
                  "遺物",
-                 "揣攴",
-                 "魔力撈印",
-                 "光原斟",
-                 "擣長ボ拏ナス")
+                 "水晶",
+                 "魔力刻印",
+                 "光原石",
+                 "成長ボーナス")
 ItemList <- data.table(en = ItemList.en,
                        ja = ItemList.ja)
 
@@ -148,7 +149,7 @@ dt.cp.mean <- dt.cp.trunc.user %>%
             mean(get(unname(unlist(ItemList[17,"ja"]))))
   )
 setnames(dt.cp.mean, c("DataName", "Player.count", ItemList$ja))
-dt.cp.mean <- setorder(dt.cp.mean, Total_CP)
+dt.cp.mean <- setorder(dt.cp.mean, DataName)
 rm(dt.cp.trunc.user)
 
 t <- dt.cp.mean
@@ -175,12 +176,12 @@ if (dir.exists("./Plot") == FALSE) {
 }
 setwd("./Plot")
 
-player.list <- c("享乳家", "ホトトギス","銀さんのミット","Zacky", "Libby")
-
+player.list <- c("牛乳家", "Libby")#,"銀さんのミット","Zacky", "Libby")
 for (i in 1:length(player.list)) {
   crtPlayer <- player.list[i]
   crtDate <- max(dt.cp[Player== crtPlayer]$Date)
-  t <- dt.cp[Player == crtPlayer & Date == max(dt.cp[Player== crtPlayer]$Date)]
+  crtDate <- tail(dt.cp[Player== crtPlayer]$Date,2)
+  t <- dt.cp[Player == crtPlayer & Date %in% crtDate]
   for (i in 1:nrow(t)) {
     for (j in 1:nrow(ItemList)) {
       temp1 <- data.table(DataName = paste(t[i]$Player,"\n(",t[i]$Date, ")", sep=""),
@@ -201,11 +202,12 @@ for (i in 1:length(player.list)) {
   rm(temp1,temp2)
   t <- rbind(dt.cp.ByItem, dt.cp.mean.ByItem)
   t$Item.ja <- factor(t$Item.ja, levels = ItemList.ja)
-  FileName <- paste(crtPlayer, " (", crtDate, ")", sep="")
-  txtAnnotate <- paste("Player Name: ",crtPlayer,", Date: ",crtDate, "\n", sep ="")
+  FileName <- paste(crtPlayer, " (", tail(crtDate,1), ")", sep="")
+  txtAnnotate <- paste("Player Name: ",crtPlayer, "\n", sep ="")
   txtAnnotate <- paste(txtAnnotate, "Date aqcuisition: From ", min(dt.cp$Date), " to ", max(dt.cp$Date), "\n", sep ="")
   txtAnnotate <- paste(txtAnnotate, "Total data count: ", nrow(dt.cp), " (provided by ",nlevels(as.factor(dt.cp$Player)) , " players)\n\n", sep ="")
   txtAnnotate <- paste(txtAnnotate, "Created by: @GyuNyuYeah_BDM (", now(), ")", sep ="")
+
   g <- ggplot(t, aes(x = DataName, y = Value, fill = DataName)) +
     geom_bar(stat = "identity") +
     geom_text(aes(label = round(Value,1)), size = 3) +
@@ -231,17 +233,71 @@ for (i in 1:length(player.list)) {
                          b = max(empty.area$b), #18
                          r = max(empty.area$r), #12
                          name = "textbox")
-  # grid::grid.draw(gp0)
-  ggsave(plot = grid::grid.draw(gp0),
-         paste(FileName,".png", sep = ""),
-         width = g.width,
-         height = g.height*1.4,
-         unit = "cm",
-         dpi = 600,
-         scale = 2.5,
-         limitsize = F)
-  }
+  png(paste(FileName,".png", sep = ""),
+      width = 10000,
+      height = 7500,
+      res = 600
+      )
+  grid::grid.draw(gp0)
+  dev.off()
+  # ggsave(plot = g,
+  #        paste(FileName,".png", sep = ""),
+  #        width = g.width,
+  #        height = g.height*1.4,
+  #        unit = "cm",
+  #        dpi = 600,
+  #        scale = 2.5,
+  #        limitsize = F)
+  # ggsave(plot = grid::grid.draw(gp0),
+  #        paste(FileName,".png", sep = ""),
+  #        width = 25000,
+  #        height = 15000,
+  #        unit = "cm",
+  #        dpi = 2400,
+  #        scale = 0.2,
+  #        limitsize = F,
+  #        device = png)
+}
+t <- dt.cp[,3:20, with = F]
+setnames(t,c("戦闘力",ItemList.ja))
+s <- cor(t)
+s <- data.table(s)
+s <- s[,1]
+s <- s[,Item:=c("戦闘力",ItemList.ja)]
+setnames(s,c("cor", "Item"))
+s <- s[Item != "戦闘力"]
+s <- setorder(s,cor)
+s$Item <- factor(s$Item, levels = rev(s$Item))
+txtAnnotate <- NULL
+txtAnnotate <- paste(txtAnnotate, "Date aqcuisition: From ", min(dt.cp$Date), " to ", max(dt.cp$Date), "\n", sep ="")
+txtAnnotate <- paste(txtAnnotate, "Total data count: ", nrow(dt.cp), " (provided by ",nlevels(as.factor(dt.cp$Player)) , " players)\n", sep ="")
+txtAnnotate <- paste(txtAnnotate, "CP range: ", min(dt.cp$Total_CP), "~", max(dt.cp$Total_CP), "\n")
+g <- ggplot(s, aes(x = Item, y = cor, fill = cor)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(cor,2)), size = 3.5) +
+  ylab("相関係数") +
+  xlab("項目") +
+  scale_fill_gradientn(colors = rev(colfunc(4))) +
+  theme(title=element_text(size=16,face="bold"),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle(paste("戦闘力との相関係数 ", date(now()), sep ="")) +
+  annotate("text",
+           label = txtAnnotate,
+           x=Inf,y=Inf,hjust=1.1,vjust=1.2)
+g
+ggsave(plot = g,
+       paste("Cor.plot ", date(now()),".png", sep = ""),
+       width = g.width,
+       height = g.height*1.4,
+       unit = "cm",
+       dpi = 600,
+       scale = 1.5,
+       limitsize = F)
 setwd("../")
+
+
 
 for (i in 1:nlevels(factor(dt.cp$Player))) {
   crtPlayer <- as.character(levels(factor(dt.cp$Player))[i])
