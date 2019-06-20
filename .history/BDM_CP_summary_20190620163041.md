@@ -1,0 +1,155 @@
+---
+title: "BDM_CP"
+author: '@GyuNyuYeah_BDM'
+output: html_document
+---
+
+# まとめ 2019-06-20
+## 標本について  
+* 収集期間: 2019-05-12 ~ 2019-06-20
+* 参加プレイヤー数: 43 人
+* スクショの数: 77
+* データ数(プレイヤー毎に戦闘力100区切りでとった平均の数): 63  
+
+[戻る](./index.html)
+
+### 項目ごとのヒストグラムと統計的なやつ
+![](./Images/Sample_histogram_small.png)
+  
+|項目             |  最小値| 第一四分位数| 中央値|  平均値| 第三四分位数| 最大値| 標準偏差|
+|:----------------|-------:|------------:|------:|-------:|------------:|------:|--------:|
+|戦闘力           | 3723.00|      4063.00|   4338| 4411.51|       4657.5|   5637|   451.40|
+|闇の精霊         |  975.00|      1027.00|   1054| 1062.42|       1094.0|   1222|    51.14|
+|持続スキル       |   50.00|        68.00|     80|   76.62|         86.0|    100|    11.79|
+|知識(一般)       |  226.00|       236.00|    240|  237.55|        240.0|    240|     4.12|
+|知識(ボス)       |   96.00|       147.50|    163|  175.93|        195.0|    345|    48.48|
+|知識(ボスLv報酬) |    8.00|        15.00|     19|   23.45|         26.0|     71|    12.97|
+|ペット収集       |    0.00|         0.00|      3|    7.10|          6.0|     62|    14.74|
+|図鑑             |   48.00|       102.00|    102|   98.41|        102.0|    102|    10.12|
+|キャラLv         |  322.00|       362.00|    372|  363.94|        372.0|    372|    12.03|
+|スキル修練Lv     |   44.00|        48.00|     51|   51.15|         54.0|     64|     4.41|
+|衣装             |   20.00|        53.00|     80|   67.63|         80.0|     80|    18.64|
+|装備             |  982.00|      1152.25|   1269| 1279.98|       1386.0|   1564|   158.75|
+|アクセ           |  310.00|       344.50|    372|  378.00|        405.5|    506|    42.62|
+|遺物             |   37.00|        41.00|     72|   62.71|         79.0|    108|    19.69|
+|水晶             |   16.00|        64.00|     82|   78.74|         99.0|    127|    26.30|
+|魔力刻印         |    7.75|        43.00|     63|   65.60|         85.5|    133|    30.66|
+|光原石           |   10.00|        26.00|     32|   33.06|         39.0|     67|    11.94|
+|成長ボーナス     |  308.00|       316.00|    316|  349.22|        350.0|    534|    55.47|
+
+### 戦闘力と項目ごとの相関係数  
+![](./Images/Correlation_plot_small.png)  
+
+## 項目ごとの散布図とその平滑化曲線  
+縦軸に項目の値、横軸に100区切りの戦闘力をとった散布図。太目の青線が平滑化曲線です。  
+プレイヤー毎に色分けをしています。  
+* プレイヤー名は伏せてます。  
+名前出していいよ、という方はDMください。  
+
+複数のデータがあるプレイヤーについては線で結びました。  
+PC推奨。スマホ、タブレットじゃ操作しづらいかもしれません。。。  
+あと、データ込みのプロットなのでかなり重いです。
+
+<iframe src="./Images/Dark_spirit.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Sustatined_Skill.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Knowledge_General.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Knowledge_Boss.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Knowledge_Boss_Lv_reward.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Pet.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Picture_Book.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Character_Lv.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Skill_training.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Costume.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Equipments.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Accessories.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Artifact.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Crystal.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Magic_stamps.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Shine_stone.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+<iframe src="./Images/Growth_bonus.html"
+        height="800" width="90%"
+        scrolling="no" seamless="seamless"
+        frameBorder="0">
+</iframe>
+
+[戻る](./index.html)
